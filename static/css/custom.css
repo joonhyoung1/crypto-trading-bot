@@ -1,0 +1,127 @@
+/* Logo styling */
+.logo-img {
+    height: 24px;
+    width: auto;
+    vertical-align: middle;
+}
+
+/* Custom styles to enhance the dark theme */
+.table {
+    margin-bottom: 0;
+}
+
+.table-sm td,
+.table-sm th {
+    padding: 0.3rem;
+}
+
+.card {
+    border-radius: 4px;
+    border: 1px solid var(--bs-border-color);
+    font-size: 0.9rem;
+}
+
+.badge {
+    font-size: 0.7em;
+    padding: 0.2em 0.4em;
+}
+
+#refreshBtn {
+    transition: all 0.3s ease;
+}
+
+#refreshBtn:disabled {
+    opacity: 0.7;
+}
+
+.fa-bitcoin {
+    margin-right: 0.5rem;
+}
+
+.text-muted {
+    font-size: 0.9em;
+}
+
+/* Column widths */
+.table th:nth-child(1),
+.table td:nth-child(1) {
+    width: 30%;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+    width: 35%;
+    text-align: right;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+    width: 35%;
+    text-align: right;
+}
+
+/* Exchange name styling */
+.exchange-name {
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.exchange-symbol {
+    color: var(--bs-info);
+    font-size: 0.9em;
+    margin-left: 0.5rem;
+}
+
+.card-header {
+    padding: 0.5rem;
+}
+
+.table-sm td,
+.table-sm th {
+    padding: 0.2rem;
+    font-size: 0.8rem;
+}
+
+.badge {
+    font-size: 0.7em;
+}
+
+.card-footer {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .table-sm td,
+    .table-sm th {
+        padding: 0.2rem;
+        font-size: 0.8rem;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    #refreshBtn {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .logo-img {
+        height: 20px;
+    }
+}
+
+/* Adjust card sizes for 2-column layout */
+.col-6 {
+    margin-bottom: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .col-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}

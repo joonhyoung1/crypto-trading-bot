@@ -1,0 +1,140 @@
+1. Bitget 선물 거래 주문 API 요청 코드
+✅ Bitget Futures API 공식 문서 참고 → /api/mix/v1/order/placeOrder
+✅ API 요청 시 서명(Signature) 필요 (HMAC SHA256 적용)
+✅ 심볼 포맷: "XRPUSDT_UM" (Bitget은 언더스코어 없음)
+
+📌 Bitget 선물 거래 API 주문 코드
+
+python
+복사
+편집
+import requests
+import hmac
+import hashlib
+import time
+
+# 🔴 Bitget API Key 설정
+BITGET_API_KEY = "YOUR_BITGET_API_KEY"
+BITGET_API_SECRET = "YOUR_BITGET_API_SECRET"
+BITGET_PASSPHRASE = "YOUR_BITGET_PASSPHRASE"
+BASE_URL = "https://api.bitget.com/api/mix/v1/order/placeOrder"
+
+def generate_bitget_signature(timestamp, method, request_path, body=""):
+    """ Bitget API 요청을 위한 HMAC SHA256 서명 생성 """
+    sign_data = timestamp + method + request_path + body
+    return hmac.new(BITGET_API_SECRET.encode(), sign_data.encode(), hashlib.sha256).hexdigest()
+
+def place_bitget_futures_order(symbol, volume, side, leverage=1):
+    """ Bitget 선물 거래 API 주문 실행 """
+
+    # 1️⃣ 현재 타임스탬프 생성
+    timestamp = str(int(time.time() * 1000))
+
+    # 2️⃣ API 요청 파라미터 설정 (선물 주문 필수 파라미터)
+    params = {
+        "symbol": symbol,  # 예: "XRPUSDT_UM"
+        "marginCoin": "USDT",
+        "size": volume,    # 주문 수량 (USDT 기준)
+        "price": "",       # 시장가 주문
+        "side": "buy" if side == 1 else "sell",  # "buy" = 매수(Long), "sell" = 매도(Short)
+        "orderType": "market",  # "market": 시장가 주문, "limit": 지정가 주문
+        "leverage": str(leverage),  # 레버리지 설정
+        "clientOid": str(int(time.time() * 1000))  # 고유 주문 ID
+    }
+
+    body = json.dumps(params)
+
+    # 3️⃣ 서명(Signature) 생성 후 요청 헤더 설정
+    headers = {
+        "ACCESS-KEY": BITGET_API_KEY,
+        "ACCESS-SIGN": generate_bitget_signature(timestamp, "POST", "/api/mix/v1/order/placeOrder", body),
+        "ACCESS-TIMESTAMP": timestamp,
+        "ACCESS-PASSPHRASE": BITGET_PASSPHRASE,
+        "Content-Type": "application/json"
+    }
+
+    # 4️⃣ API 요청 실행
+    response = requests.post(BASE_URL, data=body, headers=headers)
+
+    # 5️⃣ 응답 데이터 확인
+    return response.json()
+
+# 🔹 테스트 실행: Bitget에서 30,000원(XRPUSDT_UM) 매수 주문 (23 USDT 기준)
+order_response = place_bitget_futures_order("XRPUSDT_UM", 23, 1, leverage=1)
+print(order_response)
+✅ Bitget에서 올바르게 주문이 실행될 가능성이 높음!
+✅ API Key가 정확하고, Futures 거래 권한이 활성화된지 확인해야 함!
+
+✅ 2. Gate.io 선물 거래 주문 API 요청 코드
+✅ Gate.io Futures API 공식 문서 참고 → /api/v4/futures/usdt/orders
+✅ API 요청 시 서명(Signature) 필요 (HMAC SHA512 적용)
+✅ 심볼 포맷: "XRP_USDT"
+
+📌 Gate.io 선물 거래 API 주문 코드
+
+python
+복사
+편집
+import requests
+import hmac
+import hashlib
+import time
+import json
+
+# 🔴 Gate.io API Key 설정
+GATE_API_KEY = "YOUR_GATE_API_KEY"
+GATE_API_SECRET = "YOUR_GATE_API_SECRET"
+BASE_URL = "https://api.gateio.ws/api/v4/futures/usdt/orders"
+
+def generate_gate_signature(method, request_path, query_string="", body=""):
+    """ Gate.io API 요청을 위한 HMAC SHA512 서명 생성 """
+    timestamp = str(int(time.time()))
+    sign_data = f"{method}\n{request_path}\n{query_string}\n{body}\n{timestamp}"
+    signature = hmac.new(GATE_API_SECRET.encode(), sign_data.encode(), hashlib.sha512).hexdigest()
+    return signature, timestamp
+
+def place_gate_futures_order(symbol, volume, side, leverage=1):
+    """ Gate.io 선물 거래 API 주문 실행 """
+
+    # 1️⃣ API 요청 파라미터 설정 (선물 주문 필수 파라미터)
+    params = {
+        "contract": symbol,  # 예: "XRP_USDT"
+        "size": volume,      # 주문 수량
+        "price": 0,          # 시장가 주문
+        "tif": "ioc",        # Time in Force ("ioc": 즉시 실행)
+        "text": f"t_{int(time.time())}",  # 고유 주문 ID
+        "reduce_only": False,
+        "is_close": False
+    }
+
+    body = json.dumps(params)
+    request_path = "/api/v4/futures/usdt/orders"
+
+    # 2️⃣ 서명(Signature) 생성
+    signature, timestamp = generate_gate_signature("POST", request_path, body=body)
+
+    # 3️⃣ 요청 헤더 설정
+    headers = {
+        "KEY": GATE_API_KEY,
+        "SIGN": signature,
+        "Timestamp": timestamp,
+        "Content-Type": "application/json"
+    }
+
+    # 4️⃣ API 요청 실행
+    response = requests.post(BASE_URL, data=body, headers=headers)
+
+    # 5️⃣ 응답 데이터 확인
+    return response.json()
+
+# 🔹 테스트 실행: Gate.io에서 30,000원(XRP_USDT) 매수 주문 (23 USDT 기준)
+order_response = place_gate_futures_order("XRP_USDT", 23, 1, leverage=1)
+print(order_response)
+✅ Gate.io에서 올바르게 주문이 실행될 가능성이 높음!
+✅ API Key가 정확하고, Futures 거래 권한이 활성화된지 확인해야 함!
+
+🚀 최종 정리 (Bitget & Gate.io API)
+✔ Bitget & Gate.io API에서 인증 방식(HMAC SHA256/SHA512) 적용 완료!
+✔ 올바른 심볼 형식 설정 (XRPUSDT_UM for Bitget, XRP_USDT for Gate.io)
+✔ 주문 시 필수 파라미터 추가 → 시장가 주문(Market) 방식 적용!
+✔ API Key가 올바르게 설정되어 있고, Futures 권한이 활성화되어 있어야 정상 주문 가능!

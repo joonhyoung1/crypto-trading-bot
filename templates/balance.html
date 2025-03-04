@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>거래소 잔액 정보</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">거래소 모니터링</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/"><i class="fas fa-chart-line"></i> 호가창</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/balance"><i class="fas fa-wallet"></i> 잔액 정보</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/orderbook"><i class="fas fa-book"></i> 상세 호가창</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2>거래소 잔액 및 수익률</h2>
+                    <div class="d-flex gap-2">
+                        <div class="btn-group" role="group">
+                            <button id="startAutoTradingBtn" class="btn btn-success">
+                                <i class="fas fa-play"></i> 자동매매 시작
+                            </button>
+                            <button id="stopAutoTradingBtn" class="btn btn-danger">
+                                <i class="fas fa-stop"></i> 자동매매 종료
+                            </button>
+                        </div>
+                        <button id="refreshBtn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> 새로고침
+                        </button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>거래소</th>
+                                        <th>USDT 잔액</th>
+                                        <th>원화 환산</th>
+                                        <th>사용 가능</th>
+                                        <th>사용 중</th>
+                                        <th>전일 수익률</th>
+                                        <th>월간 수익률</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="balanceTableBody">
+                                    <!-- 잔액 데이터가 여기에 동적으로 추가됩니다 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/balance.js') }}"></script>
+</body>
+</html>

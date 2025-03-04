@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradingView Webhook 테스트</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>TradingView Webhook 테스트</h2>
+        <div class="card">
+            <div class="card-body">
+                <form id="webhookForm">
+                    <div class="mb-3">
+                        <label for="exchange" class="form-label">거래소</label>
+                        <select class="form-select" id="exchange" name="exchange" required>
+                            <option value="mexc">MEXC</option>
+                            <option value="bitget">Bitget</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="symbol" class="form-label">심볼</label>
+                        <input type="text" class="form-control" id="symbol" name="symbol" 
+                               placeholder="예: XRP/USDT 또는 DOGE/USDT" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="side" class="form-label">거래 방향</label>
+                        <select class="form-select" id="side" name="side" required>
+                            <option value="buy">매수</option>
+                            <option value="sell">매도</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="amount" class="form-label">수량 (코인 개수)</label>
+                        <input type="number" class="form-control" id="amount" name="amount" 
+                               placeholder="예: XRP는 100개, DOGE는 1000개" step="0.0001" required>
+                        <small class="text-muted">거래하려는 코인의 개수를 입력하세요. 소수점 4자리까지 가능</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="leverage" class="form-label">레버리지</label>
+                        <input type="number" class="form-control" id="leverage" name="leverage" 
+                               value="1" min="1" required>
+                        <small class="text-muted">1배 이상의 레버리지 설정 가능</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">테스트 실행</button>
+                </form>
+                <div class="mt-3">
+                    <h5>응답:</h5>
+                    <pre id="response" class="bg-dark text-light p-3 rounded"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('webhookForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/webhook', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                document.getElementById('response').textContent = 
+                    JSON.stringify(result, null, 2);
+
+            } catch (error) {
+                document.getElementById('response').textContent = 
+                    JSON.stringify({error: error.message}, null, 2);
+            }
+        });
+    </script>
+</body>
+</html>

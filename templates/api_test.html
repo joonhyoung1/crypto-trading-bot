@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>거래소 API 테스트</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>거래소 API 연결 테스트</h2>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">MEXC 선물</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="mexcStatus">테스트 중...</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Bitget 선물</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="bitgetStatus">테스트 중...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-4">
+            <button class="btn btn-primary" onclick="testAPI()">다시 테스트</button>
+        </div>
+    </div>
+
+    <script>
+        async function testAPI() {
+            try {
+                const response = await fetch('/api/test');
+                const data = await response.json();
+                
+                // Update MEXC status
+                const mexcStatus = document.getElementById('mexcStatus');
+                if (data.mexc.status === 'success') {
+                    mexcStatus.innerHTML = `
+                        <div class="alert alert-success">
+                            ${data.mexc.message}
+                            ${data.mexc.has_futures_access ? 
+                                '<br>선물 거래 권한 확인됨' : 
+                                '<br>선물 거래 권한 없음'}
+                        </div>`;
+                } else {
+                    mexcStatus.innerHTML = `
+                        <div class="alert alert-danger">
+                            ${data.mexc.message}
+                        </div>`;
+                }
+                
+                // Update Bitget status
+                const bitgetStatus = document.getElementById('bitgetStatus');
+                if (data.bitget.status === 'success') {
+                    bitgetStatus.innerHTML = `
+                        <div class="alert alert-success">
+                            ${data.bitget.message}
+                            ${data.bitget.has_futures_access ? 
+                                '<br>선물 거래 권한 확인됨' : 
+                                '<br>선물 거래 권한 없음'}
+                        </div>`;
+                } else {
+                    bitgetStatus.innerHTML = `
+                        <div class="alert alert-danger">
+                            ${data.bitget.message}
+                        </div>`;
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('mexcStatus').innerHTML = 
+                    `<div class="alert alert-danger">테스트 실패</div>`;
+                document.getElementById('bitgetStatus').innerHTML = 
+                    `<div class="alert alert-danger">테스트 실패</div>`;
+            }
+        }
+        
+        // Test on page load
+        testAPI();
+    </script>
+</body>
+</html>
